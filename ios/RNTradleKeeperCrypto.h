@@ -8,3 +8,4 @@
 
 @interface RNTradleKeeperCrypto : NSObject
 
+@end

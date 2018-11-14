@@ -11,6 +11,8 @@
 
 @implementation RNTradleKeeperCrypto
 
+#pragma mark - Private constants
+
 static NSString* const RNTradleKeeperCryptoErrorDomain = @"tradle.keeper.crypto.error";
 
 enum RNTradleKeeperCryptoError
@@ -18,6 +20,8 @@ enum RNTradleKeeperCryptoError
   RNTradleKeeperCryptoNoError = 0,           // Never used
   RNTradleKeeperCryptoNoSuchCipher,          // Invalid hash algorithm
 };
+
+#pragma mark - Public methods
 
 //+ (NSData*) encryptWithCipher:(NSString *)cipherName
 //                  data:(NSString *) base64Plaintext
@@ -43,10 +47,14 @@ enum RNTradleKeeperCryptoError
 //  }
 //}
 //
-//+ (NSData*) encodeEncryptionResult:(NSData*)ciphertext iv:(NSData*) iv {
-////  NSInteger size = [
-////  NSData* data = [NSData* alloca(<#size#>)]
-//}
++ (NSData*) encodeEncryptionResult:(NSData*)ciphertext iv:(NSData*) iv {
+  NSArray *pieces = [NSArray arrayWithObjects:ciphertext, iv, nil];
+  return [RNTradleKeeperCrypto lengthEncode:pieces];
+}
+
++ (NSArray*) decodeDecryptionResult:(NSData*) data {
+  return [RNTradleKeeperCrypto lengthDecode:data];
+}
 
 + (NSData*) lengthEncode:(NSArray*)pieces
 {
@@ -57,8 +65,8 @@ enum RNTradleKeeperCryptoError
 
   NSMutableData *encoded = [NSMutableData dataWithLength:size];
   for (NSData *data in pieces) {
-    int len = data.length;
-    NSData *lenBytes = [RNTradleKeeperCrypto dataFromInt:len];
+    NSUInteger len = data.length;
+    NSData *lenBytes = [RNTradleKeeperCrypto dataFromInt:(int)len];
     [encoded appendData:lenBytes];
     [encoded appendData:data];
   }
@@ -66,8 +74,8 @@ enum RNTradleKeeperCryptoError
   return [NSData dataWithData:encoded];
 }
 
-+ (NSData*) lengthDecode:(NSData*)encoded {
-  NSMutableData *decoded = [NSMutableData data];
++ (NSArray*) lengthDecode:(NSData*)encoded {
+  NSMutableArray *decoded = [NSArray init];
   NSUInteger offset = 0;
   NSUInteger len = [encoded length];
   while (offset < len) {
@@ -80,11 +88,11 @@ enum RNTradleKeeperCryptoError
                                                  length:pieceLen
                                            freeWhenDone:YES];
 
-    [decoded appendData:piece];
+    [decoded addObject:piece];
     offset += pieceLen;
   }
 
-  return [NSData dataWithData:decoded];
+  return [NSArray arrayWithArray:decoded];
 }
 
 + (NSData *) dataFromInt:(int)num {
