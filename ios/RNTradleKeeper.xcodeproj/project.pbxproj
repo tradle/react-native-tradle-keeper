@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B3E7B58A1CC2AC0600A0062D /* RNTradleKeeper.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNTradleKeeper.m */; };
+		736F95F2219C54CA00A33515 /* RNTradleKeeper.m in Sources */ = {isa = PBXBuildFile; fileRef = 736F95F1219C54CA00A33515 /* RNTradleKeeper.m */; };
+		736F979F219CA5E200A33515 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 736F979B219CA5E200A33515 /* RNEncryptor.m */; };
+		736F97A0219CA5E200A33515 /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 736F979C219CA5E200A33515 /* RNCryptorEngine.m */; };
+		736F97A1219CA5E200A33515 /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 736F979D219CA5E200A33515 /* RNDecryptor.m */; };
+		736F97A2219CA5E200A33515 /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 736F979E219CA5E200A33515 /* RNCryptor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,8 +28,19 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNTradleKeeper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNTradleKeeper.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B3E7B5881CC2AC0600A0062D /* RNTradleKeeper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNTradleKeeper.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* RNTradleKeeper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTradleKeeper.m; sourceTree = "<group>"; };
+		736F95F1219C54CA00A33515 /* RNTradleKeeper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTradleKeeper.m; sourceTree = "<group>"; };
+		736F95FB219C68F200A33515 /* RNCryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCryptor.h; sourceTree = "<group>"; };
+		736F9795219CA5E000A33515 /* RNEncryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNEncryptor.h; sourceTree = "<group>"; };
+		736F9796219CA5E100A33515 /* RNCryptor-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RNCryptor-Prefix.pch"; sourceTree = "<group>"; };
+		736F9797219CA5E100A33515 /* RNCryptor+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RNCryptor+Private.h"; sourceTree = "<group>"; };
+		736F9798219CA5E100A33515 /* RNDecryptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNDecryptor.h; sourceTree = "<group>"; };
+		736F9799219CA5E100A33515 /* RNCryptor iOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RNCryptor iOS.h"; sourceTree = "<group>"; };
+		736F979A219CA5E100A33515 /* RNCryptorEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCryptorEngine.h; sourceTree = "<group>"; };
+		736F979B219CA5E200A33515 /* RNEncryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNEncryptor.m; sourceTree = "<group>"; };
+		736F979C219CA5E200A33515 /* RNCryptorEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCryptorEngine.m; sourceTree = "<group>"; };
+		736F979D219CA5E200A33515 /* RNDecryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDecryptor.m; sourceTree = "<group>"; };
+		736F979E219CA5E200A33515 /* RNCryptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCryptor.m; sourceTree = "<group>"; };
+		736F97CB219CB6EF00A33515 /* RNTradleKeeper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNTradleKeeper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,8 +65,19 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				B3E7B5881CC2AC0600A0062D /* RNTradleKeeper.h */,
-				B3E7B5891CC2AC0600A0062D /* RNTradleKeeper.m */,
+				736F97CB219CB6EF00A33515 /* RNTradleKeeper.h */,
+				736F9799219CA5E100A33515 /* RNCryptor iOS.h */,
+				736F9796219CA5E100A33515 /* RNCryptor-Prefix.pch */,
+				736F979E219CA5E200A33515 /* RNCryptor.m */,
+				736F9797219CA5E100A33515 /* RNCryptor+Private.h */,
+				736F979A219CA5E100A33515 /* RNCryptorEngine.h */,
+				736F979C219CA5E200A33515 /* RNCryptorEngine.m */,
+				736F9798219CA5E100A33515 /* RNDecryptor.h */,
+				736F979D219CA5E200A33515 /* RNDecryptor.m */,
+				736F9795219CA5E000A33515 /* RNEncryptor.h */,
+				736F979B219CA5E200A33515 /* RNEncryptor.m */,
+				736F95FB219C68F200A33515 /* RNCryptor.h */,
+				736F95F1219C54CA00A33515 /* RNTradleKeeper.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,6 +113,7 @@
 				TargetAttributes = {
 					58B511DA1A9E6C8500147676 = {
 						CreatedOnToolsVersion = 6.1.1;
+						LastSwiftMigration = 0940;
 					};
 				};
 			};
@@ -112,7 +139,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E7B58A1CC2AC0600A0062D /* RNTradleKeeper.m in Sources */,
+				736F97A1219CA5E200A33515 /* RNDecryptor.m in Sources */,
+				736F97A0219CA5E200A33515 /* RNCryptorEngine.m in Sources */,
+				736F979F219CA5E200A33515 /* RNEncryptor.m in Sources */,
+				736F95F2219C54CA00A33515 /* RNTradleKeeper.m in Sources */,
+				736F97A2219CA5E200A33515 /* RNCryptor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,12 +234,14 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (
-				"$(inherited)",
+					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNTradleKeeper;
@@ -219,12 +252,14 @@
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNTradleKeeper;
