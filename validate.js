@@ -21,9 +21,9 @@ const validators = {
   digestAlgorithm: oneOf(['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']),
   encryptionKey: is32ByteHex,
   hmacKey: is32ByteHex,
-  addToImageCache: typeValidators.boolean,
+  addToImageStore: typeValidators.boolean,
   returnBase64: typeValidators.boolean,
-  hashDataUrl: typeValidators.boolean,
+  hashInput: oneOf(['valueBytes', 'dataUrlForValue']),
 }
 
 export const validateOpts = opts => Object.keys(opts).forEach(key => {

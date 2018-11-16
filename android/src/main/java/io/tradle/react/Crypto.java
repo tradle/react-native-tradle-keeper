@@ -2,13 +2,8 @@ package io.tradle.react;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.common.util.Hex;
-import com.facebook.crypto.Entity;
-import com.facebook.crypto.exception.CryptoInitializationException;
-import com.facebook.crypto.exception.KeyChainException;
-import com.facebook.crypto.keychain.KeyChain;
 
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
@@ -21,7 +16,7 @@ import java.util.Map;
 public class Crypto {
   private final static Map<String, String> algorithms = new HashMap<>();
   private final static SecureRandom random = new SecureRandom();
-  private static int BUFFER_SIZE = 8192;
+
   static {
     algorithms.put("md5", "MD5");
     algorithms.put("sha1", "SHA-1");
@@ -57,15 +52,16 @@ public class Crypto {
     MessageDigest digest = getDigestAlgorithm(algorithm);
     InputStream is = new ByteArrayInputStream(data);
     DigestInputStream digestInputStream = new DigestInputStream(is, digest);
-    byte[] buffer = new byte[BUFFER_SIZE];
+    byte[] buffer = new byte[IO.BUFFER_SIZE];
     try {
-      while (digestInputStream.read(buffer) > -1) {}
+      while (digestInputStream.read(buffer) > -1) {
+      }
       return digestInputStream.getMessageDigest().digest();
     } catch (IOException i) {
       throw new HashGenerationException("failed to get digest");
     } finally {
-      closeQuietly(is);
-      closeQuietly(digestInputStream);
+      IO.closeQuietly(is);
+      IO.closeQuietly(digestInputStream);
     }
   }
 
@@ -97,31 +93,24 @@ public class Crypto {
 //    return hexString.toString();
 //  }
 
-  public static byte[] encrypt(String id, byte[] data, byte[] encryptionKey, byte[] hmacKey)
-          throws KeyChainException, CryptoInitializationException, IOException {
-    KeyChain keyChain = new ConcealKeyChain(encryptionKey, hmacKey);
-    com.facebook.crypto.Crypto crypto = AndroidConceal.get().createCrypto256Bits(keyChain);
-    if (!crypto.isAvailable()) {
-      throw new UnsupportedOperationException("requested crypto not available");
-    }
-
-    return crypto.encrypt(data, Entity.create(id));
-  }
+//  public static byte[] encrypt(String id, byte[] data, byte[] encryptionKey, byte[] hmacKey)
+//          throws KeyChainException, CryptoInitializationException, IOException {
+//    KeyChain keyChain = new ConcealKeyChain(encryptionKey, hmacKey);
+//    com.facebook.crypto.Crypto crypto = AndroidConceal.get().createCrypto256Bits(keyChain);
+//    if (!crypto.isAvailable()) {
+//      throw new UnsupportedOperationException("requested crypto not available");
+//    }
+//
+//    return crypto.encrypt(data, Entity.create(id));
+//  }
 
   public static boolean isCryptoAvailable() {
     try {
       AndroidConceal.get().nativeLibrary.ensureCryptoLoaded();
       return true;
-    } catch (Exception i) {}
+    } catch (Exception i) {
+    }
 
     return false;
-  }
-
-  protected static void closeQuietly(Closeable closeable) {
-    try {
-      closeable.close();
-    } catch (IOException e) {
-      // shhh
-    }
   }
 }

@@ -9,12 +9,13 @@ const DEFAULT_OPTS = {
 }
 
 export default class Keeper {
-  constructor({ encryptionKey, hmacKey }) {
+  constructor(defaults) {
     this.opts = {
       ...DEFAULT_OPTS,
-      encryptionKey,
-      hmacKey,
+      ...defaults,
     }
+
+    validateOpts(this.opts)
   }
 
   normalizeAndValidateOpts(opts) {
@@ -32,15 +33,15 @@ export default class Keeper {
   async get(opts) {
     opts = this.normalizeAndValidateOpts(opts)
     requireOpts(opts, ['key', 'encryptionKey', 'hmacKey'])
-    if (!(opts.addToImageCache || opts.returnBase64)) {
-      throw new Error(`expected "addToImageCache" or "returnBase64" to be true`)
+    if (!(opts.addToImageStore || opts.returnBase64)) {
+      throw new Error(`expected "addToImageStore" or "returnBase64" to be true`)
     }
 
     return RNTradleKeeper.get(opts)
   }
 
   async prefetch(opts) {
-    opts = this.normalizeAndValidateOpts({ ...opts, addToImageCache: true })
+    opts = this.normalizeAndValidateOpts({ ...opts, addToImageStore: true })
     requireOpts(opts, ['key', 'encryptionKey', 'hmacKey'])
     return RNTradleKeeper.get(opts)
   }
@@ -57,9 +58,9 @@ export default class Keeper {
     return RNTradleKeeper.removeFromImageStore(opts)
   }
 
-  // async test() {
-  //   return RNTradleKeeper.test()
-  // }
+  async test() {
+    return RNTradleKeeper.test()
+  }
 }
 
 export const create = opts => new Keeper(opts)

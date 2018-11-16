@@ -3,7 +3,7 @@ package io.tradle.react;
 import com.facebook.crypto.keychain.KeyChain;
 
 public class ConcealKeyChain implements KeyChain {
-  private static final int AES_IV_SIZE = 16;
+  private static final int GCM_IV_SIZE = 12;
 
   private final byte[] encryptionKey;
   private final byte[] hmacKey;
@@ -25,7 +25,7 @@ public class ConcealKeyChain implements KeyChain {
 
   @Override
   public byte[] getNewIV() {
-    return Crypto.randomBytes(AES_IV_SIZE);
+    return Crypto.randomBytes(GCM_IV_SIZE);
   }
 
   @Override
