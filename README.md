@@ -33,9 +33,6 @@
       compile project(':react-native-tradle-keeper')
   	```
 
-## Details
-
-Each `folder` gets its own encryption key, which you can override if you like.
 
 ## Usage
 
@@ -43,37 +40,18 @@ Each `folder` gets its own encryption key, which you can override if you like.
 import Keeper from 'react-native-tradle-keeper';
 
 const playWithKeeper = async () => {
-  const keeper = new Keeper({
-    encryptionKey, // if you want to provide your own
-    folder,
-    // todo
-    cache: {},
-  }) 
-
-  // import, encrypt and store a data url from ImageStore
-  const key = await Keeper.importFromImageStore({ imageTag, encryptionKey })
-
-  // alternatively supply a filePath
-  //   await Keeper.importFromImageStore({ imageTag, filePath })
-  await keeper.upload({
-    key,
-    url: '...',
-    method: 'POST',
-    headers: {},
-  })
-
-  // fetch base64
-  const uri = await keeper.get({ key })
-  const imageStoreUri = await keeper.cache.load({ key })
-  // release image in cache
-  await keeper.cache.del({ key })
+  // import a data url from ImageStore
+  const keeper = new Keeper({ namespace })
+  await Keeper.importFromImageStore({ imageTag })
 }
 ```
 
 ```objective-c
-[RNKeeper cacheDataUrl:context dataUrl:dataUrl];
+Keeper keeper = [RNKeeper keeperWithNamespace: namespace];
+[keeper importFromImageStore:imageTag];
 ```
 
 ```java
-RNKeeper.cacheDataUrl(context, dataUrl);
+Keeper keeper = RNKeeper.getKeeperWithNamespace(namespace);
+keeper.importFromImageStore(imageTag);
 ```

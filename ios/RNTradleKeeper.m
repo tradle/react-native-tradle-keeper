@@ -36,7 +36,7 @@ static NSString* const RNTradleKeeperOptEncoding = @"encoding";
 static NSString* const RNTradleKeeperOptEncryptionKey = @"encryptionKey";
 static NSString* const RNTradleKeeperOptHMACKey = @"hmacKey";
 static NSString* const RNTradleKeeperOptImageTag = @"imageTag";
-static NSString* const RNTradleKeeperOptHashDataUrl = @"hashDataUrl";
+static NSString* const RNTradleKeeperOptHashInput = @"hashInput";
 static NSString* const RNTradleKeeperEncodingUTF8 = @"utf8";
 static NSString* const RNTradleKeeperEncodingBase64 = @"base64";
 
@@ -88,8 +88,8 @@ RCT_EXPORT_METHOD(put:(NSDictionary *)options
     reject(@"encryption_error", [error localizedDescription], error);
     return;
   }
-  
-  if ([RNTradleKeeper shouldAddToImageCache:options]) {
+
+  if ([RNTradleKeeper shouldAddToImageStore:options]) {
     RCTImageStoreManager *manager = [self getImageStore];
     [manager storeImageData:data withBlock:^(NSString *imageTag) {
       resolve(@{
@@ -106,20 +106,24 @@ RCT_EXPORT_METHOD(put:(NSDictionary *)options
 - (NSString*) encryptToFS:(NSData*) data
                options:(NSDictionary*) options
                  error:(NSError**) error {
-  NSString* key;
+  NSString *key;
+  NSError *opError;
   if ([options objectForKey:RNTradleKeeperOptKey] == nil) {
-    key = [self hashData:data options:options error:error];
+    key = [self hashData:data options:options error:&opError];
+    if (opError != nil) {
+      *error = opError;
+      return nil;
+    }
   } else {
     key = [options objectForKey:RNTradleKeeperOptKey];
   }
 
-  NSError* encryptionError;
   NSData *encrypted = [self encrypt:data
                             options:options
-                              error:&encryptionError];
+                              error:&opError];
 
-  if (encryptionError != nil) {
-    *error = encryptionError;
+  if (opError != nil) {
+    *error = opError;
     return nil;
   }
 
@@ -188,7 +192,7 @@ RCT_EXPORT_METHOD(get:(NSDictionary *)options
     [result setObject:[data base64EncodedDataWithOptions:0] forKey:@"base64"];
   }
 
-  if ([RNTradleKeeper shouldAddToImageCache:options]) {
+  if ([RNTradleKeeper shouldAddToImageStore:options]) {
     RCTImageStoreManager *manager = [self getImageStore];
     [manager storeImageData:data withBlock:^(NSString *imageTag) {
       [result setObject:imageTag forKey:RNTradleKeeperOptImageTag];
@@ -246,26 +250,19 @@ RCT_EXPORT_METHOD(removeFromImageStore:(NSDictionary *)options
   switch (c) {
     case 0xFF:
       return @"image/jpeg";
-      break;
     case 0x89:
       return @"image/png";
-      break;
     case 0x47:
       return @"image/gif";
-      break;
     case 0x49:
     case 0x4D:
       return @"image/tiff";
-      break;
     case 0x25:
       return @"application/pdf";
-      break;
     case 0xD0:
       return @"application/vnd";
-      break;
     case 0x46:
       return @"text/plain";
-      break;
     default:
       return @"application/octet-stream";
   }
@@ -286,7 +283,6 @@ RCT_EXPORT_METHOD(removeFromImageStore:(NSDictionary *)options
 
 - (RCTImageStoreManager*) getImageStore {
   return self->_bridge.imageStoreManager;
-//  return [self.bridge moduleForClass:[RCTImageStoreManager class]];
 }
 
 + (RNCryptorSettings) getEncryptionSettings {
@@ -435,8 +431,8 @@ RCT_EXPORT_METHOD(removeFromImageStore:(NSDictionary *)options
   return [[NSData alloc] initWithBase64EncodedString:value options:NSDataBase64DecodingIgnoreUnknownCharacters];
 }
 
-+ (BOOL) shouldAddToImageCache:(NSDictionary*) options {
-  return [RNTradleKeeper getBoolOption:options option:@"addToImageCache"];
++ (BOOL) shouldAddToImageStore:(NSDictionary*) options {
+  return [RNTradleKeeper getBoolOption:options option:@"addToImageStore"];
 }
 
 + (BOOL) shouldReturnBase64:(NSDictionary*) options {
@@ -451,19 +447,16 @@ RCT_EXPORT_METHOD(removeFromImageStore:(NSDictionary *)options
   return [options objectForKey:option] == nil ? defaultValue : [[options objectForKey:option] boolValue];
 }
 
-//RCT_EXPORT_METHOD(hash:(NSDictionary *)options
-//                  resolver:(RCTPromiseResolveBlock)resolve
-//                  rejecter:(RCTPromiseRejectBlock)reject)
-//{}
-
-- (NSString*) hashData:(NSData *)content
+- (NSString*) hashData:(NSData *)data
                   options:(NSDictionary *)options
                   error:(NSError**) error
 {
   NSString* algorithm = [options objectForKey:RNTradleKeeperOptDigestAlgorithm];
-  if ([RNTradleKeeper getBoolOption:options option:RNTradleKeeperOptHashDataUrl]) {
-    NSString* dataUrl = [RNTradleKeeper getDataUrl:content error:error];
-    content = [dataUrl dataUsingEncoding:NSUTF8StringEncoding];
+  NSError* getHashInputError;
+  data = [self getHashInputData:data options:options error:&getHashInputError];
+  if (getHashInputError != nil) {
+    *error = getHashInputError;
+    return nil;
   }
 
   NSArray *algorithms = [NSArray arrayWithObjects:@"md5", @"sha1", @"sha224", @"sha256", @"sha384", @"sha512", nil];
@@ -480,18 +473,20 @@ RCT_EXPORT_METHOD(removeFromImageStore:(NSDictionary *)options
   int digestLength = [[keysToDigestLengths objectForKey:algorithm] intValue];
 
   unsigned char buffer[digestLength];
+  const void *bytes = data.bytes;
+  CC_LONG dataLength = (CC_LONG)data.length;
   if ([algorithm isEqualToString:@"md5"]) {
-    CC_MD5(content.bytes, (CC_LONG)content.length, buffer);
+    CC_MD5(bytes, dataLength, buffer);
   } else if ([algorithm isEqualToString:@"sha1"]) {
-    CC_SHA1(content.bytes, (CC_LONG)content.length, buffer);
+    CC_SHA1(bytes, dataLength, buffer);
   } else if ([algorithm isEqualToString:@"sha224"]) {
-    CC_SHA224(content.bytes, (CC_LONG)content.length, buffer);
+    CC_SHA224(bytes, dataLength, buffer);
   } else if ([algorithm isEqualToString:@"sha256"]) {
-    CC_SHA256(content.bytes, (CC_LONG)content.length, buffer);
+    CC_SHA256(bytes, dataLength, buffer);
   } else if ([algorithm isEqualToString:@"sha384"]) {
-    CC_SHA384(content.bytes, (CC_LONG)content.length, buffer);
+    CC_SHA384(bytes, dataLength, buffer);
   } else if ([algorithm isEqualToString:@"sha512"]) {
-    CC_SHA512(content.bytes, (CC_LONG)content.length, buffer);
+    CC_SHA512(bytes, dataLength, buffer);
   } else {
     *error = [NSError errorWithDomain:RNTradleKeeperErrorDomain code:RNTradleKeeperInvalidAlgorithm userInfo:nil];
     return nil;
@@ -502,6 +497,16 @@ RCT_EXPORT_METHOD(removeFromImageStore:(NSDictionary *)options
     [output appendFormat:@"%02x",buffer[i]];
 
   return output;
+}
+
+- (NSData*) getHashInputData:(NSData*) rawInput options:(NSDictionary*)options error:(NSError**) error {
+  NSString* hashInputType = [options objectForKey:RNTradleKeeperOptHashInput];
+  if (hashInputType != nil && [hashInputType isEqualToString:@"dataUrlForValue"]) {
+    NSString* dataUrl = [RNTradleKeeper getDataUrl:rawInput error:error];
+    return [dataUrl dataUsingEncoding:NSUTF8StringEncoding];
+  }
+
+  return rawInput;
 }
 
 @end
