@@ -36,22 +36,4 @@
 
 ## Usage
 
-```js
-import Keeper from 'react-native-tradle-keeper';
-
-const playWithKeeper = async () => {
-  // import a data url from ImageStore
-  const keeper = new Keeper({ namespace })
-  await Keeper.importFromImageStore({ imageTag })
-}
-```
-
-```objective-c
-Keeper keeper = [RNKeeper keeperWithNamespace: namespace];
-[keeper importFromImageStore:imageTag];
-```
-
-```java
-Keeper keeper = RNKeeper.getKeeperWithNamespace(namespace);
-keeper.importFromImageStore(imageTag);
-```
+See [./example.js](./example.js)
