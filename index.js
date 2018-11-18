@@ -41,7 +41,7 @@ export default class Keeper {
   }
 
   async prefetch(opts) {
-    opts = this.normalizeAndValidateOpts({ ...opts, addToImageStore: true })
+    opts = this.normalizeAndValidateOpts({ ...opts, addToImageStore: true, returnBase64: false })
     requireOpts(opts, ['key', 'encryptionKey', 'hmacKey'])
     return RNTradleKeeper.get(opts)
   }
