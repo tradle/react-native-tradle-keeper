@@ -22,7 +22,7 @@ const validators = {
   encryptionKey: is32ByteHex,
   hmacKey: is32ByteHex,
   addToImageStore: typeValidators.boolean,
-  returnBase64: typeValidators.boolean,
+  returnValue: typeValidators.boolean,
   hashInput: oneOf(['valueBytes', 'dataUrlForValue']),
 }
 

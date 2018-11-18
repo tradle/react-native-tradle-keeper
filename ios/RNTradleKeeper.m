@@ -180,6 +180,11 @@ RCT_EXPORT_METHOD(get:(NSDictionary *)options
   NSURL *base = [RNTradleKeeper applicationDocumentsDirectory];
   NSURL *filePath = [base URLByAppendingPathComponent:key];
   NSData *encrypted = [NSData dataWithContentsOfURL:filePath];
+  if (encrypted == nil) {
+    reject(@"not_found", [NSString stringWithFormat:@"value not found for key %@", key], nil);
+    return;
+  }
+
   NSError* error;
   NSData *data = [self decrypt:encrypted options:options error:&error];
   if (error != nil) {
@@ -188,8 +193,8 @@ RCT_EXPORT_METHOD(get:(NSDictionary *)options
   }
 
   NSMutableDictionary* result = [NSMutableDictionary new];
-  if ([RNTradleKeeper shouldReturnBase64:options]) {
-    [result setObject:[data base64EncodedDataWithOptions:0] forKey:@"base64"];
+  if ([RNTradleKeeper shouldReturnValue:options]) {
+    [result setObject:[RNTradleKeeper encodeToString:data options:options] forKey:@"value"];
   }
 
   if ([RNTradleKeeper shouldAddToImageStore:options]) {
@@ -431,12 +436,29 @@ RCT_EXPORT_METHOD(removeFromImageStore:(NSDictionary *)options
   return [[NSData alloc] initWithBase64EncodedString:value options:NSDataBase64DecodingIgnoreUnknownCharacters];
 }
 
++ (NSString*) encodeToString:(NSData*) data options:(NSDictionary*) options {
+  NSString* encoding = [options objectForKey:RNTradleKeeperOptEncoding];
+  if ([encoding isEqualToString:RNTradleKeeperEncodingUTF8]) {
+    // assumes data is not null-terminated
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  }
+
+  return [data base64EncodedStringWithOptions:0];
+}
+
++ (NSDictionary*) encodeData:(NSData*)data options:(NSDictionary*) options {
+  return @{
+    @"value": [RNTradleKeeper encodeToString:data options:options],
+    @"encoding": [options objectForKey:RNTradleKeeperOptEncoding],
+  };
+}
+
 + (BOOL) shouldAddToImageStore:(NSDictionary*) options {
   return [RNTradleKeeper getBoolOption:options option:@"addToImageStore"];
 }
 
-+ (BOOL) shouldReturnBase64:(NSDictionary*) options {
-  return [RNTradleKeeper getBoolOption:options option:@"returnBase64"];
++ (BOOL) shouldReturnValue:(NSDictionary*) options {
+  return [RNTradleKeeper getBoolOption:options option:@"returnValue"];
 }
 
 + (BOOL) getBoolOption:(NSDictionary*) options option:(NSString*) option {

@@ -1,6 +1,7 @@
 
 import { NativeModules } from 'react-native'
 import { validateOpts, requireOpts } from './validate'
+import Errors from './errors'
 
 const { RNTradleKeeper } = NativeModules
 const DEFAULT_OPTS = {
@@ -33,17 +34,25 @@ export default class Keeper {
   async get(opts) {
     opts = this.normalizeAndValidateOpts(opts)
     requireOpts(opts, ['key', 'encryptionKey', 'hmacKey'])
-    if (!(opts.addToImageStore || opts.returnBase64)) {
-      throw new Error(`expected "addToImageStore" or "returnBase64" to be true`)
+    if (!(opts.addToImageStore || opts.returnValue)) {
+      throw new Error(`expected "addToImageStore" or "returnValue" to be true`)
     }
 
-    return RNTradleKeeper.get(opts)
+    try {
+      return await RNTradleKeeper.get(opts)
+    } catch (err) {
+      throw Errors.interpret(err)
+    }
   }
 
   async prefetch(opts) {
-    opts = this.normalizeAndValidateOpts({ ...opts, addToImageStore: true, returnBase64: false })
+    opts = this.normalizeAndValidateOpts({ ...opts, addToImageStore: true, returnValue: false })
     requireOpts(opts, ['key', 'encryptionKey', 'hmacKey'])
-    return RNTradleKeeper.get(opts)
+    try {
+      return await RNTradleKeeper.get(opts)
+    } catch (err) {
+      throw Errors.interpret(err)
+    }
   }
 
   async importFromImageStore(opts) {
@@ -64,3 +73,4 @@ export default class Keeper {
 }
 
 export const create = opts => new Keeper(opts)
+export { Errors }
