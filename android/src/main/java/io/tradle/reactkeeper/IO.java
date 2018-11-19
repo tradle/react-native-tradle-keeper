@@ -1,4 +1,4 @@
-package io.tradle.react;
+package io.tradle.reactkeeper;
 
 import java.io.Closeable;
 import java.io.IOException;

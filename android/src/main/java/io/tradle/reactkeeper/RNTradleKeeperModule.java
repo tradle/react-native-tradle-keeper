@@ -1,5 +1,5 @@
 
-package io.tradle.react;
+package io.tradle.reactkeeper;
 
 import android.content.ContentResolver;
 import android.net.Uri;
@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+
+import io.tradle.reactimagestore.ImageStoreModule;
+import io.tradle.reactimagestore.ImageStoreUtils;
 
 public class RNTradleKeeperModule extends ReactContextBaseJavaModule {
 
