@@ -81,8 +81,8 @@ public class RNTradleKeeperModule extends ReactContextBaseJavaModule {
     if (req.isDone()) return;
 
     KeeperOpts opts = req.opts;
-    if (!(opts.returnBase64 || opts.addToImageStore)) {
-      req.reject(Errors.INVALID_OPTIONS, "expected returnBase64 or addToImageStore");
+    if (!(opts.returnValue || opts.addToImageStore)) {
+      req.reject(Errors.INVALID_OPTIONS, "expected returnValue or addToImageStore");
       return;
     }
 
@@ -97,8 +97,8 @@ public class RNTradleKeeperModule extends ReactContextBaseJavaModule {
     maybeAddToImageStore(req, data.bytes);
     if (req.isDone()) return;
 
-    if (opts.returnBase64) {
-      req.setResponseProperty("base64", data.base64);
+    if (opts.returnValue) {
+      req.setResponseProperty("value", data.string);
     }
 
     req.resolve();
@@ -138,8 +138,10 @@ public class RNTradleKeeperModule extends ReactContextBaseJavaModule {
     ContentResolver contentResolver = reactContext.getContentResolver();
     InputStream fileStream = null;
     InputStream inputStream = null;
-    ByteArrayOutputStream outBytes = opts.addToImageStore ? new ByteArrayOutputStream() : null;
-    ByteArrayOutputStream outBase64 = opts.returnBase64 ? new ByteArrayOutputStream() : null;
+    boolean returnBase64 = opts.returnValue && opts.encoding == KeeperOpts.Encoding.base64;
+    boolean returnUtf8 = opts.returnValue && opts.encoding == KeeperOpts.Encoding.utf8;
+    ByteArrayOutputStream outBytes = opts.returnValue || opts.addToImageStore ? new ByteArrayOutputStream() : null;
+    ByteArrayOutputStream outBase64 = returnBase64 ? new ByteArrayOutputStream() : null;
     Base64OutputStream base64Converter = outBase64 == null ? null : new Base64OutputStream(outBase64, Base64.NO_WRAP);
     try {
       fileStream = contentResolver.openInputStream(sourceUri);
@@ -167,9 +169,16 @@ public class RNTradleKeeperModule extends ReactContextBaseJavaModule {
       }
     }
 
+    String string = null;
+    if (returnBase64) {
+      string = outBase64.toString();
+    } else if (returnUtf8) {
+      string = outBytes.toString();
+    }
+
     return new FileData(
       outBytes == null ? null : outBytes.toByteArray(),
-      outBase64 == null ? null : outBase64.toString()
+      string
     );
   }
 
@@ -307,10 +316,10 @@ public class RNTradleKeeperModule extends ReactContextBaseJavaModule {
 
   class FileData {
     public final byte[] bytes;
-    public final String base64;
-    public FileData(byte[] bytes, String base64) {
+    public final String string;
+    public FileData(byte[] bytes, String string) {
       this.bytes = bytes;
-      this.base64 = base64;
+      this.string = string;
     }
   }
 }

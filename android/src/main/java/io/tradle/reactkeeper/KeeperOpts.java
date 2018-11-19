@@ -27,7 +27,7 @@ public class KeeperOpts {
   public Encoding encoding;
   public HashInput hashInput;
   public boolean addToImageStore;
-  public boolean returnBase64;
+  public boolean returnValue;
   public KeyChain keyChain;
   private com.facebook.crypto.Crypto crypto;
 
@@ -50,7 +50,7 @@ public class KeeperOpts {
     private Encoding encoding;
     private HashInput hashInput;
     private boolean addToImageStore;
-    private boolean returnBase64;
+    private boolean returnValue;
     private KeyChain keyChain;
 
     public Builder() {}
@@ -100,8 +100,8 @@ public class KeeperOpts {
       return this;
     }
 
-    public Builder setReturnBase64(boolean value) {
-      returnBase64 = value;
+    public Builder setReturnValue(boolean value) {
+      returnValue = value;
       return this;
     }
 
@@ -116,7 +116,7 @@ public class KeeperOpts {
       opts.encoding = this.encoding;
       opts.hashInput = this.hashInput;
       opts.addToImageStore = this.addToImageStore;
-      opts.returnBase64 = this.returnBase64;
+      opts.returnValue = this.returnValue;
       if (this.encryptionKey != null && this.hmacKey != null) {
         opts.keyChain = new ConcealKeyChain(this.encryptionKey, this.hmacKey);
       }
@@ -153,7 +153,7 @@ public class KeeperOpts {
     }
 
     builder.setAddToImageStore(getBoolean(opts, "addToImageStore", false));
-    builder.setReturnBase64(getBoolean(opts, "returnBase64", true));
+    builder.setReturnValue(getBoolean(opts, "returnValue", true));
     return builder.build();
   }
 
