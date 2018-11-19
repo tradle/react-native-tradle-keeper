@@ -1,7 +1,7 @@
 
 import { NativeModules } from 'react-native'
 import { validateOpts, requireOpts } from './validate'
-import Errors from './errors'
+import * as Errors from './errors'
 
 const { RNTradleKeeper } = NativeModules
 const DEFAULT_OPTS = {
