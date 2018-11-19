@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import io.tradle.reactimagestore.ImageData;
 import io.tradle.reactimagestore.ImageStoreModule;
 import io.tradle.reactimagestore.ImageStoreUtils;
 
@@ -112,24 +113,25 @@ public class RNTradleKeeperModule extends ReactContextBaseJavaModule {
     if (req.isDone()) return;
 
     KeeperOpts opts = req.opts;
-    byte[] imageBytes;
+    ImageData imageData;
     try {
-      imageBytes = ImageStoreModule.getImageDataForTag(this.reactContext, opts.imageTag);
+      imageData = ImageStoreModule.getImageDataForTag(this.reactContext, opts.imageTag);
     } catch (IOException i) {
       req.reject(IMAGE_STORE_ERROR, i);
       return;
     }
 
-    setKeyIfNotSet(opts, imageBytes);
+    setKeyIfNotSet(opts, imageData.bytes);
 
     try {
-      encryptAndStore(imageBytes, opts);
+      encryptAndStore(imageData.bytes, opts);
     } catch (Exception i) {
       req.reject(IMAGE_STORE_ERROR, i);
       return;
     }
 
     req.setResponseProperty("key", opts.key);
+    req.setResponseProperty("mimeType", imageData.mimeType);
     req.resolve();
   }
 
