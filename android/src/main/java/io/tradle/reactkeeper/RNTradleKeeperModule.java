@@ -132,6 +132,7 @@ public class RNTradleKeeperModule extends ReactContextBaseJavaModule {
 
     req.setResponseProperty("key", opts.key);
     req.setResponseProperty("mimeType", imageData.mimeType);
+    req.setResponseProperty("length", imageData.bytes.length);
     req.resolve();
   }
 

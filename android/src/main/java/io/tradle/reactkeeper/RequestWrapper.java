@@ -76,4 +76,8 @@ public class RequestWrapper {
   public void setResponseProperty(String key, boolean value) {
     this.response.putBoolean(key, value);
   }
+
+  public void setResponseProperty(String key, int value) {
+    this.response.putInt(key, value);
+  }
 }

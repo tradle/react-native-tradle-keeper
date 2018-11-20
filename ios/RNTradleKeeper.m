@@ -232,6 +232,7 @@ RCT_EXPORT_METHOD(importFromImageStore:(NSDictionary *)options
     resolve(@{
       @"key": key,
       @"mimeType": [RNTradleKeeper mimeTypeForData:data],
+      @"length": [data length],
     });
   }];
 }
