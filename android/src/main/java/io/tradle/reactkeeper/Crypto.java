@@ -75,7 +75,7 @@ public class Crypto {
   }
 
   public static String bytesToHex(byte[] data) {
-    return Hex.encodeHex(data, false);
+    return Hex.encodeHex(data, false).toLowerCase();
   }
 
   public static byte[] randomBytes(int length) {
