@@ -1,3 +1,10 @@
+import Keeper from 'react-native-tradle-keeper'
+import ImagePicker from 'react-native-image-picker'
+
+const sha256 = buffer => {
+  // not covered in this example
+  return buffer
+}
 
 // store regular data
 const keeper = new Keeper({
@@ -8,41 +15,42 @@ const keeper = new Keeper({
   encoding: 'base64',
 })
 
-const regularDataExample = async () =>
-  const value = 'someBase64String'
-  const key = sha256OfValue
-  await keeper.put({
-    key: sha256OfValue,
-    value: value,
-    // addToImageStore: true,
-    // target: Keeper.target.imageCache,
-  })
+const snap = opts => new Promise((resolve, reject) => {
+  ImagePicker.launchCamera(opts, ({ error, didCancel, ...result }) => {
+    if (error || didCancel) {
+      return reject(new Error(error || 'user canceled'))
+    }
 
-  const result = await keeper.get({
-    key: sha256OfValue
+    resolve(result)
   })
+})
 
-  console.log(result.base64) // original value
+const regularDataExample = async () => {
+  const value = 'someString'
+  const key = sha256(value)
+  await keeper.put({ key, value, encoding: 'utf8' })
+  const result = await keeper.get({ key })
+  console.log(result.value) // original value
 }
 
 // save image from JS, serve from cache
-const imageDataLowPerfExample = async () =>
-  const value = 'imageBase64'
-  const key = sha256OfValue
-
-  await new Promise((resolve, reject) => ImagePicker.launchCamera({}, ({ error, })))
-
+const imageDataLowPerfExample = async () => {
+  // data is a base64 string,
+  // expensive to transfer over the bridge
   // ideally, you're adding to react-native-image-store on the native side,
   // as shown in next example
+  const { data } = await snap({ /*...some opts...*/ })
+  const key = sha256(data)
   await keeper.put({
-    key: sha256OfValue,
-    value: value,
+    key,
+    value: data,
+    encoding: 'base64',
     addToImageStore: true,
   })
 
   // later:
   const result = await keeper.get({
-    key: sha256OfValue,
+    key,
     returnBase64: false,
     addToImageStore: true,
   })
@@ -55,7 +63,7 @@ const imageDataLowPerfExample = async () =>
 // save image via native, server from cache
 const imageDataHighPerfExample = async () => {
   // tradle/react-native-image-picker fork
-  const { imageTag } = await new Promise((resolve, reject) => ImagePicker.launchCamera({
+  const { imageTag } = await snap({
     quality: 1,
     imageFileType: 'png',
     addToImageStore: true,
@@ -64,13 +72,7 @@ const imageDataHighPerfExample = async () => {
       // forceLocal: true,
       store: false,
     }
-  }, ({ error, didCancel, ...result }) => {
-    if (error || didCancel) {
-      return reject(new Error(error || 'user canceled'))
-    }
-
-    resolve(result)
-  }))
+  })
 
   this.setState({
     uri: imageTag,

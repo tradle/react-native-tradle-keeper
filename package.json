@@ -1,18 +1,26 @@
-
 {
   "name": "react-native-tradle-keeper",
   "version": "1.0.0",
   "description": "encrypted storage, optimized for media",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --quiet --ignore-path .gitignore .",
+    "precommit": "npm run lint"
   },
   "keywords": [
     "react-native"
   ],
-  "author": "",
-  "license": "",
+  "author": "mvayngrib",
+  "license": "MIT",
   "peerDependencies": {
     "react-native": ">=0.41.2"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.9.0",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-react-native": "^3.5.0",
+    "husky": "^1.2.0"
   }
 }
