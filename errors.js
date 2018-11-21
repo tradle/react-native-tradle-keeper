@@ -12,6 +12,13 @@ export class NotFound extends Error {
   }
 }
 
+export class InvalidInput extends Error {
+  name = 'InvalidInput'
+  constructor(message) {
+    super(message)
+  }
+}
+
 export const interpret = err => {
   let result
   if (err.code === 'not_found') {

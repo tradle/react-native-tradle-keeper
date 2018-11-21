@@ -1,3 +1,4 @@
+import Errors from './errors'
 
 const HEX_ALPHABET = '0123456789abcdef'
 const is32ByteHex = val => typeof val === 'string' &&
@@ -29,18 +30,18 @@ const validators = {
 export const validateOpts = opts => Object.keys(opts).forEach(key => {
   const validate = validators[key]
   if (!validate) {
-    throw new Error(`unknown option: ${key}`)
+    throw new Errors.InvalidInput(`unknown option: ${key}`)
   }
 
   const val = opts[key]
   if (!validate(val)) {
-    throw new Error(`invalid value for option "${key}"`)
+    throw new Errors.InvalidInput(`invalid value for option "${key}"`)
   }
 })
 
 export const requireOpts = (opts, names) => {
   const missing = names.filter(name => !opts[name])
   if (missing.length) {
-    throw new Error(`missing required options: ${missing.join(', ')}`)
+    throw new Errors.InvalidInput(`missing required options: ${missing.join(', ')}`)
   }
 }
